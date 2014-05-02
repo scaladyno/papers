@@ -1,0 +1,224 @@
+\documentclass[10pt, preprint]{sigplanconf}
+
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage[compact]{titlesec}
+\usepackage{multirow}
+\usepackage{color, colortbl}
+\usepackage{fancyvrb}
+\usepackage{shortvrb}
+\usepackage{setspace}
+\usepackage{flushend}
+\usepackage{stfloats}
+\usepackage{listings,xcolor,beramono}
+\usepackage{tikz}
+\usepackage{calc}
+\usepackage[utf8x]{inputenc}
+%% typesetting type system rules:
+\usepackage{latexsym}
+\usepackage{bcprules}
+\usepackage[T1]{fontenc}
+
+% Short verbatim
+\DefineShortVerb{\|}
+\fvset{fontsize=\small}
+
+\definecolor{Gray}{gray}{0.9}
+\definecolor{LightGray}{gray}{0.4}
+\newcolumntype{g}{>{\columncolor{Gray}}r}
+
+\newcommand\Small{\fontsize{8.5}{8.5}\selectfont}
+\newcommand*\LSTfont{\Small\ttfamily\lsstyle}
+
+% Divisible by
+\DeclareRobustCommand{\divby}{%
+  \mathrel{\vbox{\baselineskip.65ex\lineskiplimit0pt\hbox{.}\hbox{.}\hbox{.}}}%
+}
+
+\makeatletter
+\newenvironment{btHighlight}[1][]
+{\begingroup\tikzset{bt@Highlight@par/.style={#1}}\begin{lrbox}{\@tempboxa}}
+{\end{lrbox}\bt@HL@box[bt@Highlight@par]{\@tempboxa}\endgroup}
+
+\newcommand\btHL[1][]{%
+  \begin{btHighlight}[#1]\bgroup\aftergroup\bt@HL@endenv%
+}
+\def\bt@HL@endenv{%
+  \end{btHighlight}%
+  \egroup
+}
+\newcommand{\bt@HL@box}[2][]{%
+  \tikz[#1]{%
+    \pgfpathrectangle{\pgfpoint{1pt}{0pt}}{\pgfpoint{\wd #2}{\ht #2}}%
+    \pgfusepath{use as bounding box}%
+    \node[anchor=base west, fill=black!10,outer sep=0pt,inner xsep=1pt, inner ysep=0pt, rounded corners=1pt, minimum height=\ht\strutbox+1pt,#1]{\raisebox{1pt}{\strut}\strut\usebox{#2}};
+  }%
+}
+
+\g@addto@macro\normalsize{%
+  \setlength\abovedisplayskip{-0.5em}
+  \setlength\belowdisplayskip{1em}
+  \setlength\abovedisplayshortskip{0.25em}
+  \setlength\belowdisplayshortskip{0.25em}
+}
+\makeatother
+
+% "define" Scala
+\lstdefinelanguage{scala}{
+  morekeywords={abstract,case,catch,class,def,%
+    do,else,extends,false,final,finally,%
+    for,if,implicit,import,match,mixin,%
+    new,null,object,override,package,%
+    private,protected,requires,return,sealed,%
+    super,this,throw,trait,true,try,%
+    type,val,var,while,with,yield},
+  otherkeywords={=>,<-,<\%,<:,>:,\#,@},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  morestring=[b]""",
+  moredelim=**[is][\btHL]{`}{`},
+}
+
+% Default settings for code listings
+%\lstset{language=scala,showstringspaces=false,columns=flexible, basicstyle=\footnotesize \ttfamily}
+\definecolor{ggray}{gray}{0.5}
+\renewcommand{\ttdefault}{pcr}
+\lstset{frame=tb,
+  language=scala,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\footnotesize \ttfamily},
+  %basicstyle=\LSTfont,
+%% numbers:
+%  numbers=none,
+  numbers=left,
+  %xleftmargin=2em,
+  %framexleftmargin=1.5em,
+%%% end numbers
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\bfseries,
+  commentstyle=\em\color{ggray},
+  stringstyle=\em,
+%  keywordstyle=\color{blue},
+%  commentstyle=\color{OliveGreen},
+%  stringstyle=\color{Purple},
+  frame=single,
+  breaklines=true,
+  breakatwhitespace=true
+  tabsize=3
+}
+
+%% Line numbers inside frame:
+%% http://tex.stackexchange.com/questions/30504/how-can-i-properly-align-the-line-numbers-of-a-source-code-listing-with-the-marg
+\makeatletter
+\newlength{\linenumwidth} \setlength{\linenumwidth}{2em}% Redefine as required
+\newlength{\numwidth}%
+\setlength{\numwidth}{\widthof{\normalfont{\lst@numberstyle{9}}}}% Up to 2-digit (99) line numbers
+\def\lst@PlaceNumber{%
+  \makebox[\numwidth+0.3em][l]{%
+    \makebox[\numwidth][r]{\normalfont\lst@numberstyle{\thelstnumber}}%
+  }%
+}
+\makeatother
+
+
+%%% How to prevent lstlisting from splitting code between pages?
+%%% http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
+\lstnewenvironment{lstlisting-nobreak}[1][]%
+{
+   \noindent
+   \vspace{-0.1em}
+   \minipage{\linewidth}
+   \vspace{0.12\baselineskip}
+%    \lstset{basicstyle=\ttfamily\footnotesize,frame=single,#1}
+}
+{
+   \vspace{-0.1em}
+   \vspace{-0.18\baselineskip}
+   \endminipage
+}
+
+% Footnote remember - http://anthony.liekens.net/index.php/LaTeX/MultipleFootnoteReferences
+\newcommand{\footnoteremember}[2]{
+\footnote{#2}
+\newcounter{#1}
+\setcounter{#1}{\value{footnote}}
+}
+\newcommand{\footnoterecall}[1]{
+\footnotemark[\value{#1}]
+}
+% use:
+% \footnoteremember{myfootnote}{This is my footnote}
+% \footnoterecall{myfootnote}
+
+% Packed item, so we don't waste space
+\newenvironment{packed_item}{
+\begin{itemize}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0.2pt}
+  \setlength{\parsep}{0.2pt}
+}{\end{itemize}}
+
+% Packed enum, so we don't waste space
+\newenvironment{packed_enum}{
+\begin{enumerate}
+  \setlength{\itemsep}{1pt}
+  \setlength{\parskip}{0.2pt}
+  \setlength{\parsep}{0.2pt}
+}{\end{enumerate}}
+
+% Review tools
+%\newcommand{\topic}[1]{#1}
+\newcommand{\topic}[1]{{\bf \color{Bittersweet}#1}}
+% This marks comments
+%\newcommand{\vu}[1]{{\color{BurntOrange}\framebox{{\bf VU}}\;#1}\;}
+%\newcommand{\tr}[1]{{\color{Blue}{\bf \framebox{TR}\;#1}}\;}
+%\newcommand{\as}[1]{{\color{Red}{\bf \framebox{AS}\;#1}}\;}
+%\newcommand{\mo}[1]{{\color{OliveGreen}{\bf \framebox{MO}\;#1}}\;}
+\newcommand{\textem}[1]{{\em#1}}
+\newcommand{\newterm}[1]{{\em #1}}
+
+% Paper HACKS
+\setstretch{0.98}
+\renewcommand{\bibfont}{\scriptsize}
+%\renewcommand{\UrlFont}{\scriptsize}
+\renewcommand*{\UrlFont}{\ttfamily\footnotesize\relax}
+
+\begin{document}
+
+\clubpenalty=10000
+\widowpenalty = 10000
+
+\titlebanner{DRAFT - Please do not circulate}        % These are ignored unless
+\preprintfooter{DRAFT - Please do not circulate}     % 'preprint' option specified.
+
+\title{ScalaDyno: Making Name Resolution and Type Checking Fault-Tolerant}
+
+\authorinfo{Cédric Bastin \and Vlad Ureche \and Martin Odersky}
+           {EPFL, Switzerland}
+           {\{first.last\}@epfl.ch}
+
+\maketitle
+
+\input{abstract.tex}
+
+%\category{E.2}{Object representation}{}
+
+\keywords
+TBD
+
+\newpage
+
+\bibliographystyle{abbrvnat}
+\bibliography{main}
+
+\end{document}

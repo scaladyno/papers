@@ -1,0 +1,52 @@
+# tex
+*.aux
+*.log
+*.synctex.gz
+*.blg
+*.bbl
+*.out
+*.pdf
+*.ps
+*.dvi
+*.fdb_latexmk
+*.fls
+*.toc
+
+# backups
+*.bak
+*~
+
+# sbt
+target/
+lib_managed/
+src_managed/
+boot/
+
+# eclipse
+.project
+.classpath
+.texlipse
+.settings
+org.eclipse.jdt.core.prefs
+.scala_dependencies
+
+# intellij
+*.iml
+*/.idea/*
+*.ipr
+*.iws
+
+# binaries
+*.class
+*.jar
+
+# mac
+.DS_Store
+
+# Makefile dependencies
+.deps
+
+# ERC report paper archive
+erc/midterm-report/papers.tar.gz
+
+/src

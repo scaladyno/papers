@@ -1,0 +1,29 @@
+\section{Introduction}
+
+\topic{Generics allow programmers} to describe algorithms and data structures irrespective of the data they operate on. This enables code reuse and type safety. For the programmer, generic code, which uses parametric polymorphism, exposes a uniform and type safe interface that can be reused in different contexts, while offering the same behavior and guarantees. This increases productivity and improves code quality. Modern programming languages offer generic collections, such as linked lists, array buffers or maps as part of their standard libraries.
+
+\topic{But despite the uniformity exposed to programmers, the lower level translation of generic code struggles with fundamentally non-uniform data.} To illustrate the problem, we can analyze the |contains| method of a linked list parameterized on the element type, |T|, written in the Scala programming language:
+
+\begin{lstlisting-nobreak}
+ def contains(element: T): Boolean = ...
+\end{lstlisting-nobreak}
+
+When translating the |contains| method to lower level code, such as assembly or bytecode targeting a virtual machine, a compiler needs to know the exact type of the parameter, so it can be correctly retrieved from the stack, registers or read from memory. But since the list is generic, the type parameter |T| can have different bindings, depending on the context, ranging from a byte to a floating point number or a pointer to a heap object, each with different sizes and semantics. So the compiler needs to bridge the gap between the uniform interface and the non-uniform low level implementation.
+
+\topic{Languages targeting the Java Virtual Machine \cite{x10-www, scala-www, kotlin-www, ceylon-www} use a technique called erasure \cite{java-erasure} to bridge the gap between the high level generics and low level bytecode.} Erasure of generics makes it possible to have a uniform translation at the low level by coercing the generic data to be passed by reference. This is naturally compatible with heap objects in the language. Yet, since primitive types such as integers and floating point numbers are not part of the class hierarchy, primitive values need to be contained in objects, so they can be passed to low level generic code. This coercing process is called boxing. For each primitive value, boxing creates a special object to store it. The opposite process, which extracts the primitive value is called unboxing. Despite simplifying the low level translation of generics, boxing and unboxing bring significant performance drawbacks: values are accessed indirectly from heap objects, redundant object headers are allocated along with values and since values are stored as objects, the cache locality is not guaranteed anymore. This is a major concern for performance-aware code, and was addressed in the Scala compiler using the specialization transformation.
+
+\topic{Specialization \cite{specialization-iuli} is an optimized transformation in the Scala compiler meant to improve the performance of generic code.} In practice, specialization speeds up code execution by an order of magnitude \cite{erik-spire} by creating multiple transaltions of the generic code, adapted for each primitive type. This allows executing generic code without the need for boxing and unboxing operations. For a piece of generic code depending on a single type parameter, specialization will generate 10 variants of the code, 9 for the primitive types in Scala and one for objects. Unfortunately this doesn't scale well: for a class with 3 type parameters, such as |Tuple3| or |Function2|, specialization produces $10^3$ classes, which is too much bytecode to include in the standard library.
+
+\topic{Miniboxing aims at reducing the amount of bytecode produced by specialization,} by trading off a small percent of the execution speed. With miniboxing, classes such as |Tuple3| and |Function2| are specialized with just 8 variants in the low level code. The key insight of the miniboxing translation is that all primitive types can be stored in a tagged-union-like structure \cite{tagged-unions-lua}, thus reducing the code duplication to 2 classes per type parameter. The miniboxing transformation has been shown to perform on par with specialization on microbenchmarks \cite{miniboxing}, but to date, it has not been explored for high level language constructions, such as closures, implicits and mix-ins.
+
+Scala provides high-level generic collections, promoting type-safe code reuse and standardization. Yet, their performance degrades when they are used for primitive types, since collections are not specialized due to the bytecode bloat. This has led to many discussions on the mailing lists, with users being unhappy about the slowdowns incurred for primitive types. Therefore, miniboxing is a good candidate for specializing Scala collections, as it reaps the benefits of specialization without creating prohibitive amounts of bytcode, this making the library both fast and portable.
+
+This paper explores the interaction of miniboxing with different high level language constructs and with patterns used in the Scala collections, such as closures, implicits, mix-ins and the builder pattern. In this context, it makes the following contributions:
+
+\begin{packed_item}
+\item explains the miniboxing transformation in the Scala compiler from a programmer's perspective;
+\item shows how the miniboxing transformation interacts with the high-level constructs in the Scala language;
+\item presents benchmarks that show the miniboxing plugin can produce optimal code for high-level constructs.
+\end{packed_item}
+
+The next section will describe the miniboxing transformation.
