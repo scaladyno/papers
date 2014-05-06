@@ -178,7 +178,7 @@
 
 % Review tools
 %\newcommand{\topic}[1]{#1}
-\newcommand{\topic}[1]{{\bf \color{Bittersweet}#1}}
+\newcommand{\topic}[1]{{\bf #1}}
 % This marks comments
 %\newcommand{\vu}[1]{{\color{BurntOrange}\framebox{{\bf VU}}\;#1}\;}
 %\newcommand{\tr}[1]{{\color{Blue}{\bf \framebox{TR}\;#1}}\;}
@@ -205,7 +205,7 @@
 
 \authorinfo{Cédric Bastin \and Vlad Ureche \and Martin Odersky}
            {EPFL, Switzerland}
-           {\{first.last\}@epfl.ch}
+           {\{firstname.lastname\}@epfl.ch}
 
 \maketitle
 
@@ -214,9 +214,19 @@
 %\category{E.2}{Object representation}{}
 
 \keywords
-TBD2
+Scala, dynamic typing, deferred type errors
 
 \input{intro.tex}
+
+\input{motivation.tex}
+
+\input{theory.tex}
+
+\input{implementation.tex}
+
+\input{related_work.tex}
+
+\input{conclusion.tex}
 
 \bibliographystyle{abbrvnat}
 \bibliography{main}

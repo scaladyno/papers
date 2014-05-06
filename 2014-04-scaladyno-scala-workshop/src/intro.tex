@@ -1,0 +1,46 @@
+\section{Introduction}
+
+In a statically typed programming language the type checker which runs at
+compile time gives static feedback which provides some correctness guarantees of
+its output, the compiled program. This method help to avoid some errors which
+might only become visible at runtime for dynamically typed languages.Knowing the
+object and class structures at compile time also help the compiler to do a lot
+of optimizations such as object layout in the system memory.
+On the other hand the restrictive type system might get in the way during agile
+development where even small code changes would require a lot or effort to adapt
+the surrounding code which depends on the modified code.
+
+In this cases dynamically typed languages come in handy as they allow fast
+prototyping because they have less strict typing rules. However without the
+missing feedback no static guarantees are available if a program is correctly
+typed or not. Those limits also create related problems such that refractoring
+tools cannot detect and modify all the related code such that some if this work
+needs to be done by hand. The runtime performance of dynamic languages is also
+generally slower or at least cannot be optimized beyond a specific threshold due
+to needed runtime type checks and monkey patching, where any field or method can
+be added during the execution of a program.
+
+In the case of an ideal programming language, static feedback should be
+available but also be optional such that the programmer can decide whenever to
+use a more dynamic or static language depending on the development phase his
+work is currently in. For example in early development the programmer might want
+more dynamic language features for fast prototyping and worry about
+type-correctness everywhere only later. However the behaviour of programs or
+parts of programs which are semantically equivalent to a type-correct program
+should not be compiled to something different tha the original code and the
+should have no or minimal runtime overhead.
+
+There are two main approaches to address the problem of combining static and
+dynamic language features. Either you start with a dynamic language and add
+static features or you start with a static language and make it more dynamic.
+The former represents a quite big change in the existing compiler as you would
+need to create a new typer which would analyse the program at compile-time an
+give some information about the typing. In general this is very hard as most
+dynamically typed languages have very specific typing behaviour such as
+duck-typing and monkey-patching which would make type analyzing even more
+difficult than in some existing static typers. The latter might be a better
+approach as you can reuse the existing static typer and only change behaviour
+specific to the kind of error that you want to disregard.
+
+
+

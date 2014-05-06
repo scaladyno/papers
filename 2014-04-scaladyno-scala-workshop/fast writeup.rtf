@@ -1,22 +1,30 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1187\cocoasubrtf400
 {\fonttbl\f0\fnil\fcharset0 Verdana;}
 {\colortbl;\red255\green255\blue255;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww11020\viewh15340\viewkind0
+\paperw11900\paperh16840\margl1440\margr1440\vieww13900\viewh15360\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
 
-\f0\b\fs24 \cf0 Intro:
+\f0\b\fs24 \cf0 Abstract:
+\b0 \
+In the academic and the professional community it is agreed on the fact that both statically and dynamically typed languages have both benefits and drawbacks. Statically typed languages provide important feedback at compile time about parts of the program which will go wrong at runtime, however this type system is also quite strict and thus very unflexible to the developer. Dynamically typed languages on the other hand leave give a lot more freedom to they freedom due to the very loose type system where most checks are done at runtime and the class structures are extensible. It would thus sometimes be useful to have a programming language with have a blend of the two kinds of languages with most the benefits combined. Such a language would allow fast prototyping and could as well provide static guarantees.\
+ScalaDyno is a take on such a language where the current Scala compiler is extended such that it deferres naming and typing errors to runtime.\
+\
+
+\b \
+Intro:
 \i\b0 \
 static languages:
 \i0 \
-In a statically typed programming language the type checker which runs at compile time gives static feedback which provides some correctness guarantees of the compiled program. This method help to avoid some errors which might only become visible at runtime for dynamically typed languages. Knowing the object and class structures at compile time also help the compiler to do a lot of optimizations such as object layout in system memory. On the other hand the restrictive type system might get in the way during agile development where even small code changes would require a lot or effort to adapt the surrounding code which depends on the code.\
+In a statically typed programming language the type checker which runs at compile time gives static feedback which provides some correctness guarantees of its output, the compiled program. This method help to avoid some errors which might only become visible at runtime for dynamically typed languages. Knowing the object and class structures at compile time also help the compiler to do a lot of optimizations such as object layout in the system memory. On the other hand the restrictive type system might get in the way during agile development where even small code changes would require a lot or effort to adapt the surrounding code which depends on the modified code.\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
 
-\i dynamic languages:
+\i \cf0 dynamic languages:
 \i0 \
-In this cases dynamically typed languages come in handy as they allow fast prototyping because they have less strict typing rules. However without the missing static feedback no more static guarantees are available that a program is not correctly typed. Those limits also create related problems such that no advanced refractoring tools are available. The runtime performance of dynamic languages is also generally speaking slower because no static dispatch can be done and thus no optimization.\
+In this cases dynamically typed languages come in handy as they allow fast prototyping because they have less strict typing rules. However without the missing static feedback no static guarantees are available if a program is correctly typed or not. Those limits also create related problems such that refractoring tools cannot detect and modify all the related code such that some if this work needs to be done by hand. The runtime performance of dynamic languages is also generally slower or at least cannot be optimized beyond a specific due to needed runtime type checks and monkey patching, where any field or method can be added during the execution of the program.\
 
 \i ideal language:
 \i0 \
-In the case of an ideal programming language, static feedback should be available but also be optional such that the programmer can decide whenever to use a more dynamic or static language depending on the development phase he is currently working on. For example in early development the programmer might want more dynamic language features for fast prototyping. However the behaviour of parts of the program which are semantically equivalent to a statically type-checked program should not be compiled to something else and the should be no or minimal runtime overhead.\
+In the case of an ideal programming language, static feedback should be available but also be optional such that the programmer can decide whenever to use a more dynamic or static language depending on the development phase his work is currently at. For example in early development the programmer might want more dynamic language features for fast prototyping and worry about type-correctness everywhere later. However the behaviour of parts of the program which are semantically equivalent to a type-correct program should not be compiled to something else and the should have no or minimal runtime overhead.\
 EXAMPLE\
 
 \i where to start?
@@ -28,10 +36,8 @@ There are two main approaches to address the problem of combining static and dyn
 -refractor without preventing compilation of existing working code (not for abstract)\
 The are existing refractoring tools which can handle some of the use cases but they do not work for more advanced semantic changes. For examples if you want to change the needed arguments of a method or add type parameters, those changes cannot be propagated throughout the code as the tool is missing information about default values for example.\
 - having certain paths in the program that don't work should not brake the type correct ones\
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
-\cf0 For a programmer it might be useful sometimes to be able to execute correct paths and not worry all the time about all possible paths and the corresponding errors which can occur.\
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
-\cf0 - still give static guarantees\
+For a programmer it might be useful sometimes to be able to execute correct paths and not worry all the time about all possible paths and the corresponding errors which can occur.\
+- still give static guarantees\
 The language or language extension should still be able to give some kind of static feedback. Currently the entire compilation process is aborted and subsequent error from one typing error get ignored in the compiler error output. One should be able to see all possible typing errors as the might give some additional insight in a problem. Also the type correct parts of the program should still get compiled an\
 - fast runtime\
 Statically typed langauges generally have a quite fast runtime execution as they avoid most of the dispatching at runtime\
@@ -51,9 +57,11 @@ To achieve all or most of the described features one can turn to several alterna
 \i code exampe:
 \i0 \
 \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
 
-\b Motivation:
+\b \cf0 Motivation:
 \b0 \
+\
 \
 
 \b Theory:
@@ -62,12 +70,13 @@ To achieve all or most of the described features one can turn to several alterna
 
 \b Implementation:
 \b0 \
+The Scala compiler is composed of several independent consecutive phases which each do gradual changes to the AST. \
 \
 
 \b Related work & comparative table:
 \b0 \
 \
 
-\b Conclustion:
+\b Conclusion:
 \b0 \
 }
