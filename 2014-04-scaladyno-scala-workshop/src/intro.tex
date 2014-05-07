@@ -1,63 +1,21 @@
-\section{Introduction}
+ \section{Introduction}
 
-In a statically typed programming language the type checker which runs at
-compile time gives static feedback which provides some correctness guarantees of
-its output, the compiled program. This method help to avoid some errors which
-might only become visible at runtime for dynamically typed languages.Knowing the
-object and class structures at compile time also help the compiler to do a lot
-of optimizations such as object layout in the system memory.
-On the other hand the restrictive type system might get in the way during agile
-development where even small code changes would require a lot or effort to adapt
-the surrounding code which depends on the modified code.
+ In a statically typed programming language the type checker tries to prove the program is correct, rejecting anything that it cannot prove. This method helps rule out certain classes of runtime errors, such as for, for example, calling a method with the wrong number of arguments or with the wrong types. Knowing the object and class structures at compile time also enables the compiler to optimize the object layout in the system memory. On the other hand the restrictive type system can get in the way of agile development since even very small code changes can require significant refactoring for the code to type check.
 
-In this cases dynamically typed languages come in handy as they allow fast
-prototyping because they have less strict typing rules. However without the
-missing feedback no static guarantees are available if a program is correctly
-typed or not. Those limits also create related problems such that refractoring
-tools cannot detect and modify all the related code such that some if this work
-needs to be done by hand. The runtime performance of dynamic languages is also
-generally slower or at least cannot be optimized beyond a specific threshold due
-to needed runtime type checks and monkey patching, where any field or method can
-be added during the execution of a program.
+ In these cases dynamically typed languages come in handy as they allow fast prototyping by performing the necessary checks at runtime. However, without a type system even the most basic mistakes are only caught at runtime. This also makes refactoring harder as no tools are available to detect and modify all the related code automatically. The runtime performance of dynamic languages is also generally slower or at least cannot be optimized beyond a specific threshold due to needed runtime type checks and monkey patching, where any field or method can be added during the execution of a program. 
 
-In the case of an ideal programming language, static feedback should be
-available but also be optional such that the programmer can decide whenever to
-use a more dynamic or static language depending on the development phase his
-work is currently in. For example in early development the programmer might want
-more dynamic language features for fast prototyping and worry about
-type-correctness everywhere only later. However the behaviour of programs or
-parts of programs which are semantically equivalent to a type-correct program
-should not be compiled to something different than the original code and the
-should have no or minimal runtime overhead.
+  In the case of an ideal programming language, static feedback should be available but also be optional, such that the programmer can decide when to use a more dynamic or static approach depending on the development phase. For example, in early development, the programmer might want a more dynamic language to allow room for experiments. However, the correct parts of the code should be compiled as before, without introducing any runtime overhead.
 
-There are two main approaches to address the problem of combining static and
-dynamic language features. Either you start with a dynamic language and add
-static features or you start with a static language and make it more dynamic.
-The former represents a quite big change in the existing compiler as you would
-need to create a new typer which would analyse the program at compile-time an
-give some information about the typing. In general this is very hard as most
-dynamically typed languages have very specific typing behaviour such as
-duck-typing and monkey-patching which would make type analyzing even more
-difficult than in some existing static typers. The latter might be a better
-approach as you can reuse the existing static typer and only change behaviour
-specific to the kind of error that you want to disregard.
+  There are two main approaches to address the problem of combining static and dynamic language features. One can either start with a dynamic language and add static checking or start with a static language and make it more dynamic. The former is generally impossible due to code patterns such as duck typing and monkey patching which cannot be statically checked. The latter might be a better approach as one can reuse the existing static type checker while disregarding some errors and still compiling to byte code. The main difficulty in doing so is that later phases in the compiler rely on the type checked code being correct. Thus simply irgnoring error is not enough to compile the program.
 
-\topic{fast prototyping case study}
-When refracting part of the code which consists for example in changing the
-signature of a method or a constructor all the corresponding calls which use
-this changed construct also need to be filled in with default arguments. This
-however mostly need to be done by hand with require a big effort from the
-programmer mostly because the given described process might need to be done
-several time during design iterations. Of course the given problem could be
-solved by overloading the given function definition but again this creates some
-unnecessary overhead due to the reason described above.
+  A typincal bug-fix scenario includes adding an extra argument in several methods. Doing so manually by modifying the signature can lead to inconsistencies in the code since multiple call sites would need to be updated. In a statically typed language it would be impossible to prototype such a change since it would not pass the type checker. In this case it would be desirable to be able to execute only the path in the program relevant to the bug, while ignoring overall consistency until the fix is working correctly.
+  
 
-Hence it would be very useful to be able to execute paths of the program which
-do not include any of those wrong signatures being called. In the case where
-such branches would be traversed.
+  When refacting part of the code which consists for example in changing the signature of a method or a constructor all the corresponding calls which use this changed construct also need to be filled in with default arguments. This however mostly need to be done by hand with require a big effort from the programmer mostly because the given described process might need to be done several time during design iterations. Of course the given problem could be solved by overloading the given function definition but again this creates some unnecessary overhead due to the reason described above.
 
-I a typical bug fixing scenario you might find yourself fixing a bug in one
-place and thus creating even more incorrect code which you need to fix even if
-you don't care about those parts of you program at the time being.
+  Hence it would be very useful to be able to execute paths of the program which do not include any of those wrong signatures being called. In the case where such branches would be traversed.
 
-To solve the given problem right now a programer can turn
+  I a typical bug fixing scenario you might find yourself fixing a bug in one place and thus creating even more incorrect code which you need to fix even if you don't care about those parts of you program at the time being.
+
+  To solve the given problem right now a programer can turn
+

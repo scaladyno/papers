@@ -1,17 +1,8 @@
 \section{Abstract}
 
-In the academic and the professional community it is agreed on the fact that
-both statically and dynamically typed languages have both benefits and
-drawbacks. Statically typed languages provide important feedback at compile time
-about parts of the program which will go wrong at runtime and thus won't even
-compile. However this kind of type system is also quite strict and thus very
-unflexible to the developer.
-Dynamically typed languages on the other hand give a lot more freedom to the
-developer due to the loose type system where most checks are done at runtime and
-the class structures are extensible. It would thus sometimes be useful to have a
-programming language with have a blend of the two kinds of languages with most
-the benefits combined. Such a language would allow fast prototyping and could as
-well provide static guarantees when needed.
-ScalaDyno is a take on such a language where the current Scala compiler is
-extended such that it deferres naming and typing errors to runtime. This paper
-should show the use cases
+In the academic and the professional community it is agreed on the fact that both statically and dynamically typed languages have both benefits and drawbacks. Statically typed languages will reject any code that they cannot prove to be correct. However this is very inflexible to the developer when they are prototyping incompatible changes to the code.
+Dynamically typed languages on the other hand give a lot more freedom to the developer by only performing the necessary checks at runtime.
+
+It would be useful to have a programming language that combines the benefits of both static and dynamic typing. Such a language would allow agile development while also offering static guarantees for the final compilation.
+
+The ScalaDyno compiler plugin allows fast prototyping with the Scala programming language. This in done by deferring compilation errors to runtime and thus allowing byte code generation for partially incorrect programs.
