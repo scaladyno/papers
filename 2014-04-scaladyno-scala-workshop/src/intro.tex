@@ -27,7 +27,7 @@ work is currently in. For example in early development the programmer might want
 more dynamic language features for fast prototyping and worry about
 type-correctness everywhere only later. However the behaviour of programs or
 parts of programs which are semantically equivalent to a type-correct program
-should not be compiled to something different tha the original code and the
+should not be compiled to something different than the original code and the
 should have no or minimal runtime overhead.
 
 There are two main approaches to address the problem of combining static and
@@ -42,5 +42,22 @@ difficult than in some existing static typers. The latter might be a better
 approach as you can reuse the existing static typer and only change behaviour
 specific to the kind of error that you want to disregard.
 
+\topic{fast prototyping case study}
+When refracting part of the code which consists for example in changing the
+signature of a method or a constructor all the corresponding calls which use
+this changed construct also need to be filled in with default arguments. This
+however mostly need to be done by hand with require a big effort from the
+programmer mostly because the given described process might need to be done
+several time during design iterations. Of course the given problem could be
+solved by overloading the given function definition but again this creates some
+unnecessary overhead due to the reason described above.
 
+Hence it would be very useful to be able to execute paths of the program which
+do not include any of those wrong signatures being called. In the case where
+such branches would be traversed.
 
+I a typical bug fixing scenario you might find yourself fixing a bug in one
+place and thus creating even more incorrect code which you need to fix even if
+you don't care about those parts of you program at the time being.
+
+To solve the given problem right now a programer can turn
