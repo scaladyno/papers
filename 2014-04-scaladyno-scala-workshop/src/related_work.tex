@@ -1,0 +1,52 @@
+\section{Related work}
+
+\topic{Always-available static and dynamic feedback (DuctileJ)}
+
+Starting from a statically typed language
+
+
+\topic{DuctileScala: combined static and dynamic feedback for Scala}
+
+tbd
+
+
+\topic{Scala-Virtualized: better support for embedded DSLs}
+
+tbd
+
+
+\topic{Javascript as an Embedded DSL}
+
+tbd
+
+
+\topic{(Equality proofs and deferred type errors)}
+
+tbd
+\newcommand{\DS}{\begin{sideways}DuctileScala\end{sideways}}
+\newcommand{\hask}{\begin{sideways}Haskell\end{sideways}}
+\newcommand{\dyn}{\begin{sideways}Dynamic\end{sideways}}
+\newcommand{\SV}{\begin{sideways}Scala-Virtualized\end{sideways}}
+\newcommand{\dart}{\begin{sideways}Dart\end{sideways}}
+\newcommand{\DL}{\begin{sideways}dynamic languages\end{sideways}}
+\newcommand{\SJS}{\begin{sideways}Scala-JS interoperatability\end{sideways}}
+\newcommand{\JSLMS}{\begin{sideways}JS on LMS\end{sideways}}
+\newcommand{\SD}{\begin{sideways}ScalaDyno\end{sideways}}
+
+\begin{table*}[b]
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
+	\hline
+													& \DS    & \hask  & \dyn   & \SV    & \dart  & \DL    & \SJS   & \JSLMS & \SD \\
+	\hline
+    derferred class name resolution errors 			& \xmark & \xmark & \xmark & \xmark & \xmark & \cmark & \xmark & \xmark & \cmark \\
+    \hline
+    deferred method and field resolution errors 	& \xmark & \xmark & \xmark & \xmark & \xmark & \cmark & \xmark & \cmark & \xmark \\
+    \hline
+    deferred type resolution errors 				& \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \xmark & \cmark \\
+    \hline
+    fast runtime 									& \xmark & \xmark & \xmark & \cmark & \cmark & \cmark & \xmark & \cmark & \cmark \\
+    \hline
+    work at compile time 							& \xmark & \cmark & \xmark & \cmark & \xmark & \xmark & \cmark & \cmark & \cmark \\
+    \hline
+\end{tabular}
+\end{table*}
