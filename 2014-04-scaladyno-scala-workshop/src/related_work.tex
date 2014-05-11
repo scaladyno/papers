@@ -2,27 +2,41 @@
 
 \topic{Always-available static and dynamic feedback (DuctileJ)}
 
-Starting from a statically typed language
-
-
+To add dynamic behaviour to the Java programming language, DuctileJ does a detyping transformation before the actual typing phase. This detyping consists of changing the types of all the variables as well as all the method parameters to {\ttfamily Object} which is a the root class of all types. In addition to those transformations, an runtime library {\ttfamily RT} is needed to support the following actions: {\ttfamily RT.newInstance("ClassName"); RT.select(instance, "fieldName"); RT.invoke("methodName", instanceName, args); RT.assign(instance, "fieldName", value); RT.cast("ClassName", instance);}\\*
+Such a transformation however requires the duplication of the typing phase in the compiler, the first to detype the code and collect possible error messages the second to do the actual typing. Also due to method overloading, method signatures needs to be mangled such that each original parameter is duplicated, one to carry the type, the other to carry the value. Of course this creates some problems when working with pre-compiled libraries. However this transformation allows duck-typing which is also considered an important feature of dynamically typed languages.
+\\
+\\
 \topic{DuctileScala: combined static and dynamic feedback for Scala}
 
-tbd
+Very similar to DuctileJ, DuctileScala also introduces a set of new Compiler phases ({\ttfamily signature, earlynamer, earlypackageobjects, earlytyper, detyper}) which perform detyping as well as other necessary transformation (e.g. signature mangling). Some transformations however are more complicated due to implicit conversions (views) as well as pattern-matching.
+\\
+\\
+\topic{Scala.js: Type-Directed Interoperability with Dynamically Typed Languages}
 
-
+Instead of making the entire Scala language more dynamic, this approach focusses on integrating combined development with Scala an Javascript. A specific set of Scala classes is created which are only Facade type for a corresponding Javascript object, those constructs can then be compiled to dynamically typed Javascript code. Some complications encountered were due to implicit conversions and the connections with existing Javascript libraries.
+\\
+\\
 \topic{Scala-Virtualized: better support for embedded DSLs}
 
-tbd
-
-
+In analogy to hardware virtualization for virtual machines. The main idea is to customize build-in language features using virtual methods such as:\\*
+{\ttfamily def \_\_ifThenElse[T](cond) }\\*
+Similar to multi-stage programming Scala-Virtualized can be split in two parts, first the shallow embedding does type level computation using implicits followed by a deep embedding which enables to redefine build-in language constructs. "Lightweight Modular Staging (LMS) is a set of techniques and a core compiler frame-work for building embedded DSLs in Scala-Virtualized."
+\\
+\\
 \topic{Javascript as an Embedded DSL}
 
-tbd
-
-
+Using the Lightweight Modular Staging described earlier, Javascript is embedded as a DSL in Scala. Typing allows granularity such that external JavaScript libraries don't need to be typed. In other words the DSL can either be compiled to JavaScript or be used as Scala in a way that computation can either be done on the server side or the client side. 
+\\
+\\
 \topic{(Equality proofs and deferred type errors)}
 
-tbd
+tbd needed?
+\\
+\\
+\topic{(Closed Type families with overlapping equations)}
+
+tbd needed?
+\\
 \newcommand{\DS}{\begin{sideways}DuctileScala\end{sideways}}
 \newcommand{\hask}{\begin{sideways}Haskell\end{sideways}}
 \newcommand{\dyn}{\begin{sideways}Dynamic\end{sideways}}
@@ -40,11 +54,11 @@ tbd
 	\hline
     derferred class name resolution errors 			& \xmark & \xmark & \xmark & \xmark & \xmark & \cmark & \xmark & \xmark & \cmark \\
     \hline
-    deferred method and field resolution errors 	& \xmark & \xmark & \xmark & \xmark & \xmark & \cmark & \xmark & \cmark & \xmark \\
+    deferred method and field resolution errors 	& \cmark & \xmark & \cmark & \xmark & \xmark & \cmark & \cmark & \cmark & \cmark \\
     \hline
-    deferred type resolution errors 				& \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \xmark & \cmark \\
+    deferred type resolution errors 				& \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
     \hline
-    fast runtime 									& \xmark & \xmark & \xmark & \cmark & \cmark & \cmark & \xmark & \cmark & \cmark \\
+    fast runtime 									& \xmark & \xmark & \xmark & \cmark & \cmark & \cmark & \xmark & \xmark & \cmark \\
     \hline
     work at compile time 							& \xmark & \cmark & \xmark & \cmark & \xmark & \xmark & \cmark & \cmark & \cmark \\
     \hline

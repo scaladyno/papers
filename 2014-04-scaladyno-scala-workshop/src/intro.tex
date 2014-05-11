@@ -10,7 +10,6 @@
 
   A typincal bug-fix scenario includes adding an extra argument in several methods. Doing so manually by modifying the signature can lead to inconsistencies in the code since multiple call sites would need to be updated. In a statically typed language it would be impossible to prototype such a change since it would not pass the type checker. In this case it would be desirable to be able to execute only the path in the program relevant to the bug, while ignoring overall consistency until the fix is working correctly.
   
-
   When refacting part of the code which consists for example in changing the signature of a method or a constructor all the corresponding calls which use this changed construct also need to be filled in with default arguments. This however mostly need to be done by hand with require a big effort from the programmer mostly because the given described process might need to be done several time during design iterations. Of course the given problem could be solved by overloading the given function definition but again this creates some unnecessary overhead due to the reason described above.
 
   Hence it would be very useful to be able to execute paths of the program which do not include any of those wrong signatures being called. In the case where such branches would be traversed.
