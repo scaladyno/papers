@@ -1,33 +1,3 @@
-\section{Implementation}
-
-A Scala compiler plugin is nothing more than an added compiler phase which the
-as input the AST from the previous phase, transforms it corresponding to the
-implemented behaviour by recursively running through, and possibly changing, all
-AST nodes, and passes it on to the next phase.
-In the normal static typer, typing error which happen at some branch in the tree
-propagate  through the tree to the root nodes which mean that all parent nodes
-are also erroneously typed and thus the full program tree will be erroneous and
-no JVM code will be generated. To avoid this kind or error propagation we want
-to intercept the erroneously typed branches and "cut them off"; prune them at a
-level which is not harmful to the code generation such that the program can
-still be compiled even if it contains name or type errors. Finally those pruned
-branches will be replaced by trees representing Exceptions of type {\ttfamily
-ErrorType} which will be thrown at runtime.
-To achieve  this kind of behavior we first need to compiler-build-in reporter to
-issue errors because they will break compilation right away. To do so we simply
-change the reporter through reflection and and issue warnings instead of errors.
-This conversion is however only done for naming and typing errors and not for
-errors from other phases, e.g. parse errors. While converting those errors to
-warnings already provides some static feedback to the programmer at compile time
-it is also very useful to restate the error message whenever the program falls
-in an erroneously branch during runtime. The easiest way to do this is to keep a
-global mapping from positions to error messages which is later used to be
-inserted into the AST as an Exception node message. Those exception messages, in
-addition to the compiler warning output, will also be very useful for debugging.
-As our plugin has the ability to change the tree we extends the class {\ttfamily
-Transformer} form the New Scala Compiler tools which defines and provides the
-method {\ttfamilydef transform(tree: Tree): Tree} which can be used as a default
-traverser for the tree nodes which do not need a special treatment.
-
-It is also very important to mention exceptions cannot be thrown at any place in
-the code. (TODO... scope)
+ \section{Implementation}
+ A Scala compiler plugin is nothing more than an added compiler phase which the as input the AST from the previous phase, transforms it corresponding to the implemented behaviour by recursively running through, and possibly changing, all AST nodes, and passes it on to the next phase. In the normal static typer, typing error which happen at some branch in the tree propagate  through the tree to the root nodes which mean that all parent nodes are also erroneously typed and thus the full program tree will be erroneous and no JVM code will be generated. To avoid this kind or error propagation we want to intercept the erroneously typed branches and "cut them off"; prune them at a level which is not harmful to the code generation such that the program can still be compiled even if it contains name or type errors. Finally those pruned branches will be replaced by trees representing Exceptions of type {\ttfamily ErrorType} which will be thrown at runtime. To achieve  this kind of behavior we first need to compiler-build-in reporter to issue errors because they will break compilation right away. To do so we simply change the reporter through reflection and and issue warnings instead of errors. This conversion is however only done for naming and typing errors and not for errors from other phases, e.g. parse errors. While converting those errors to warnings already provides some static feedback to the programmer at compile time it is also very useful to restate the error message whenever the program falls in an erroneously branch during runtime. The easiest way to do this is to keep a global mapping from positions to error messages which is later used to be inserted into the AST as an Exception node message. Those exception messages, in addition to the compiler warning output, will also be very useful for debugging. As our plugin has the ability to change the tree we extends the class {\ttfamily Transformer} form the New Scala Compiler tools which defines and provides the method {\ttfamilydef transform(tree: Tree): Tree} which can be used as a default traverser for the tree nodes which do not need a special treatment.
+It is also very important to mention that exceptions cannot be thrown at any place in the code i.e. that AST subtrees can be replaced by system errors. For example does it not make sense to pass an error as a method argument nor to match on a pattern which is of error type. For this reason ScalaDyno propagates errors declaration to specific levels in the AST where they are safe to be thrown. Such code levels include {\ttfamily DefTree}s such as class definitions, member definition and value definitions as well as {\ttfamily pattern match} expressions. As discussed in {theory}, all errors related to the same initial error should not generate additional warnings and should reference the root error during runtime failures. This is also achieved implicitly by taking the errors messages generated by the Scala compiler and their corresponding unique positions, saving those in a mapping such that no duplicates can exist.

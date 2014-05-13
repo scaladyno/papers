@@ -5,12 +5,22 @@
  In these cases dynamically typed languages come in handy as they allow fast prototyping by performing the necessary checks at runtime. However, without a type system even the most basic mistakes are only caught at runtime. This also makes refactoring harder as no tools are available to detect and modify all the related code automatically. The runtime performance of dynamic languages is also generally slower or at least cannot be optimized beyond a specific threshold due to needed runtime type checks and monkey patching, where any field or method can be added during the execution of a program. 
 
   In the case of an ideal programming language, static feedback should be available but also be optional, such that the programmer can decide when to use a more dynamic or static approach depending on the development phase. For example, in early development, the programmer might want a more dynamic language to allow room for experiments. However, the correct parts of the code should be compiled as before, without introducing any runtime overhead.
+\begin{lstlisting-nobreak}
+def main(args: Array[String]): Unit = {
+    method_to_be_tested(args[1], args[2])
+}
+def method_which_is_never_called() = {
+    val x = new Foo()
+    x.noSuchMethod()
+    val y = NoSuchClass()
+}
+\end{lstlisting-nobreak}
 
-  There are two main approaches to address the problem of combining static and dynamic language features. One can either start with a dynamic language and add static checking or start with a static language and make it more dynamic. The former is generally impossible due to code patterns such as duck typing and monkey patching which cannot be statically checked. The latter might be a better approach as one can reuse the existing static type checker while disregarding some errors and still compiling to byte code. The main difficulty in doing so is that later phases in the compiler rely on the type checked code being correct. Thus simply irgnoring error is not enough to compile the program.
+  There are two main approaches to address the problem of combining static and dynamic language features. One can either start with a dynamic language and add static checking or start with a static language and make it more dynamic. The former is generally impossible due to code patterns such as duck typing and monkey patching which cannot be statically checked. The latter might be a better approach as one can reuse the existing static type checker while disregarding some errors and still compiling to byte code. The main difficulty in doing so is that later phases in the compiler rely on the type checked code being correct. Thus simply ignoring error is not enough to compile the program.
 
-  A typincal bug-fix scenario includes adding an extra argument in several methods. Doing so manually by modifying the signature can lead to inconsistencies in the code since multiple call sites would need to be updated. In a statically typed language it would be impossible to prototype such a change since it would not pass the type checker. In this case it would be desirable to be able to execute only the path in the program relevant to the bug, while ignoring overall consistency until the fix is working correctly.
+  A typical bug-fix scenario includes adding an extra argument in several methods. Doing so manually by modifying the signature can lead to inconsistencies in the code since multiple call sites would need to be updated. In a statically typed language it would be impossible to prototype such a change since it would not pass the type checker. In this case it would be desirable to be able to execute only the path in the program relevant to the bug, while ignoring overall consistency until the fix is working correctly.
   
-  When refacting part of the code which consists for example in changing the signature of a method or a constructor all the corresponding calls which use this changed construct also need to be filled in with default arguments. This however mostly need to be done by hand with require a big effort from the programmer mostly because the given described process might need to be done several time during design iterations. Of course the given problem could be solved by overloading the given function definition but again this creates some unnecessary overhead due to the reason described above.
+  When refactoring part of the code which consists for example in changing the signature of a method or a constructor all the corresponding calls which use this changed construct also need to be filled in with default arguments. This however mostly need to be done by hand with require a big effort from the programmer mostly because the given described process might need to be done several time during design iterations. Of course the given problem could be solved by overloading the given function definition but again this creates some unnecessary overhead due to the reason described above.
 
   Hence it would be very useful to be able to execute paths of the program which do not include any of those wrong signatures being called. In the case where such branches would be traversed.
 

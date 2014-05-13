@@ -2,7 +2,14 @@
 
 \topic{Always-available static and dynamic feedback (DuctileJ)}
 
-To add dynamic behaviour to the Java programming language, DuctileJ does a detyping transformation before the actual typing phase. This detyping consists of changing the types of all the variables as well as all the method parameters to {\ttfamily Object} which is a the root class of all types. In addition to those transformations, an runtime library {\ttfamily RT} is needed to support the following actions: {\ttfamily RT.newInstance("ClassName"); RT.select(instance, "fieldName"); RT.invoke("methodName", instanceName, args); RT.assign(instance, "fieldName", value); RT.cast("ClassName", instance);}\\*
+To add dynamic behaviour to the Java programming language, DuctileJ does a detyping transformation before the actual typing phase. This detyping consists of changing the types of all the variables as well as all the method parameters to {\ttfamily Object} which is a the root class of all types. In addition to those transformations, an runtime library {\ttfamily RT} is needed to support the following actions:
+{\ttfamily
+RT.newInstance("ClassName")\\
+RT.select(instance, "fieldName")\\
+RT.invoke("methodName", instanceName, args)\\
+RT.assign(instance, "fieldName", value)\\
+RT.cast("ClassName", instance)\\	
+}
 Such a transformation however requires the duplication of the typing phase in the compiler, the first to detype the code and collect possible error messages the second to do the actual typing. Also due to method overloading, method signatures needs to be mangled such that each original parameter is duplicated, one to carry the type, the other to carry the value. Of course this creates some problems when working with pre-compiled libraries. However this transformation allows duck-typing which is also considered an important feature of dynamically typed languages.
 \\
 \\
