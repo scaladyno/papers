@@ -24,7 +24,7 @@ Very similar to DuctileJ, DuctileScala also introduces a set of new Compiler pha
 Instead of making the entire Scala language more dynamic, this approach focusses on integrating combined development with Scala an Javascript. A specific set of Scala classes is created which are only facade types for a corresponding Javascript object, those constructs can then either be compiled to dynamic Javascript or to Scala code. Some complications encountered were due to implicit conversions and the connections with existing Javascript libraries.
 \\
 \\
-\topic{Scala-Virtualized: better support for embedded DSLs}
+\topic{Scala-Virtualized: better support for embedded DSLs (domain specific languages)}
 
 In analogy to hardware virtualization for virtual machines. The main idea of this approach is to be able to customize some build-in language features using virtual methods such as:\\*
 {\ttfamily def \_\_ifThenElse[T](cond) }\\*
@@ -47,7 +47,7 @@ tbd needed?
 \\
 \newcommand{\DS}{\begin{sideways}DuctileScala\end{sideways}}
 \newcommand{\hask}{\begin{sideways}Haskell\end{sideways}}
-\newcommand{\dyn}{\begin{sideways}Dynamic\end{sideways}}
+\newcommand{\dyn}{\begin{sideways}Dynamic trait\end{sideways}}
 \newcommand{\SV}{\begin{sideways}Scala-Virtualized\end{sideways}}
 \newcommand{\dart}{\begin{sideways}Dart\end{sideways}}
 \newcommand{\DL}{\begin{sideways}dynamic languages\end{sideways}}
