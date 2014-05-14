@@ -1,0 +1,5 @@
+ \section{Future Work}
+
+The described method for deferring type errors could be extended or combined with other dynamic features such as duck typing. In extension to the existing related work this might be possible by creating {\ttfamily Dynamic} wrapper classes for every class and detyping all instances, fields and method arguments to {\ttfamily Dynamic} such that field resolution could be done at runtime. Of course this would require additional work such as method signature mangling as well as finding an adequate solution for implicits.
+\\
+One additional feature which is not included in ScalaDyno is the possibility to be less strict about class inheritance such that abstract methods would not need to be implemented by sub-classes unless they were needed at runtime. This would need to be handled in during the {\ttfamily refcheck} phase of the Scala compiler.
