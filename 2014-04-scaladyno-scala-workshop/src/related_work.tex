@@ -11,7 +11,7 @@ RT.assign(instance, "fieldName", value)\\
 RT.cast("ClassName", instance)\\	
 }
 which are needed for the late runtime binding.
-Such a transformation however requires the duplication of the typing phase in the compiler, the first to detype the code and collect possible error messages the second to do the normal typing. Also due to method overloading, method signatures needs to be mangled which means that that each original parameter need to be duplicated, one to carry the type, the other to carry the value. Of course this creates some additional problems when working with pre-compiled libraries. However this transformation allows duck-typing which is also considered an important feature of dynamically typed languages.
+Such a transformation however requires the duplication of the typing phase in the compiler, the first to detype the code and collect possible error messages the second to do the normal typing. Also due to method overloading, method signatures needs to be mangled which means that that each original parameter need to be duplicated, one is needed to carry the type, the other to carry the value. Of course this creates some additional problems when working with pre-compiled libraries. However this transformation allows duck-typing which is also considered an important feature of dynamically typed languages.
 \\
 \\
 \topic{DuctileScala: combined static and dynamic feedback for Scala}
