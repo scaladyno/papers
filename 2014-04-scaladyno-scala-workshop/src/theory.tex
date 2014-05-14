@@ -3,3 +3,7 @@
 In the Scala language the the type {\ttfamily Nothing} is a subtype of all other classes and can thus substitute the return value of any type in a method return value for example.
 Similarly the subtyping relations for the error type are the same as for type {\ttfamily Nothing}, which means that they are equivalent except for some bit-flags. Hence an instance of error type, just as one of type {\ttfamily Nothing}, can replace any other value, be it a field, return value or argument without changing or breaking the typing rules.
 Moreover do many typing errors depend on earlier errors such as an object which could not be instantiated and its subsequent field and method accesses. Those errors should not be considered as different ones as they relate to another error. There are many advanced techniques nowadays to eliminate those "spurious" error messages. As cited in Ramsey's [reference] paper, error messages related to an erroneous identifier should be traceable by having their corresponding identifier in the symbol table with type error and by suppressing all the following errors which relate to it. This method helps to catch the spurious errors and to issue only the most relevant error message which identifies the root cause of a specific error.
+
+The main assumption made by the approach is that errors produced during refactoring and prototyping are localized, in the sense that they do not affect the entire program. Yet, 
+
+
