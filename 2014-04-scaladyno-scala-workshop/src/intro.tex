@@ -2,32 +2,58 @@
 
 In the academic and the professional community it is agreed that both statically and dynamically typed languages have benefits and drawbacks. In a statically typed programming language the type checker attempts to prove a program is correct up to the constraints encoded by types.
 %Knowing the object and class structures at compile time also enables the compiler to optimize the object layout in the memory.
-This advantageously results in rejecting any program that does not conform, thus ruling out entire classes of runtime errors, such as for example, calling a method with the wrong number of arguments or with the wrong types. On the contrary the restrictive type system can get in the way of agile development, since changes need to be reflected in the entire code base to keep its consistency. This forces significant refactoring efforts, with little benefit in terms of prototyping, only to satisfy the type checker.
+This advantageously results in rejecting any program that does not conform, thus ruling out entire classes of runtime errors, such as, for example, calling a method with the wrong number of arguments or with the wrong types. On the contrary, the restrictive type system can get in the way of agile development, since changes need to be reflected in the entire code base to keep its consistency. This forces significant refactoring efforts, with little benefit in terms of prototyping, only to satisfy the type checker.
 
- Dynamically typed languages enable fast prototyping by allowing the programmer to run incomplete prototypes and outputting the errors occured during execution. However, without a type system and static checks, even the most basic mistakes are discovered only at runtime. This also makes refactoring harder as no tools are available to detect and modify all the related code automatically. The runtime performance of dynamic languages is also generally slower or at least cannot be optimized beyond a specific threshold due to runtime type checks and monkey patching, where any field or method can be added during the execution of a program.
+ Dynamically typed languages enable fast prototyping by allowing the programmer to run incomplete prototypes and outputting the errors occured during execution. However, without a type system and static checks, even the most basic mistakes are discovered only at runtime. This also makes refactoring harder as no tools are available to detect and modify all the related code automatically. The runtime performance of dynamic languages is also generally slower or at least cannot be optimized beyond a specific threshold due to runtime type checks and monkey patching, where any field or method can be added during the execution.
 
-  In the case of an ideal programming language, static feedback should be available but also be optional, such that the programmer can decide when to use a more dynamic or static approach depending on the development phase. For example, in early development, the programmer might want a more dynamic language to allow room for experiments. However, the correct parts of the code should be compiled as before, without introducing any runtime overhead.
+%  In an ideal programming language, static feedback should be available but also be optional, such that the programmer can decide when to use a more dynamic or static approach depending on the development phase. For example, in early development, the programmer might want a more dynamic language to allow room for experiments. However, the correct parts of the code should be compiled as before, without introducing any runtime overhead:
 
-% Lucia's variant:  In an ideal programming language, static feedback should be optional, such that the programmer can decide when to use a more dynamic or static approach depending on the development phase (such as bug-fixing, refactoring or preparing for release). Firstly, during bug fixing or new feature development, the programmer might want a more dynamic approach to favor experimentation. However, the correct parts of the code should be compiled as before, without introducing any runtime overhead. A typical bug-fixing scenario includes adding an extra argument in several methods. Doing so manually by modifying the signature can lead to inconsistencies in the code since multiple call sites would need to be updated. In a statically typed language it would be impossible to prototype such a change since it would not pass the type checker. In this case it would be desirable to be able to execute only the path in the program relevant to the bug, while ignoring overall consistency until the fix is working correctly.
+In an ideal programming language, static feedback should be optional, such that the programmer can decide when to use a more dynamic or static approach depending on the development phase (such as bug-fixing, refactoring or preparing for release). Firstly, during bug fixing or new feature development, the programmer might want a more dynamic approach to favor experimentation. However, the correct parts of the code should be compiled as before, without introducing any runtime overhead.
+
+A typical bug-fixing scenario includes adding an extra argument in several methods. Doing so manually by modifying the signature can lead to an inconsistent code base until all call sites have benn manually updated. In this case it would be desirable to be able to execute only the path in the program relevant to the bug, while ignoring overall consistency until the fix is working correctly:
 
 \begin{lstlisting-nobreak}
-def main(args: Array[String]): Unit = {
-    method_to_be_tested(args[1], args[2])
-}
-def method_which_is_never_called() = {
-    val x = new Foo()
-    x.noSuchMethod()
-    val y = NoSuchClass()
-}
+ object Program {
+   // result of running the program: "Hello!"
+   def main(args: Array[String]): Unit = {
+     if (0 == 1)
+       never_called()
+     println("Hello!")
+   }
+
+   // should this method prevent compilation
+   // and execution of the entire program?!?
+   def never_called() = {
+     val x = new Foo()
+     x.noSuchMethod()
+     val y = NoSuchClass()
+   }
+ }
 \end{lstlisting-nobreak}
 
-  There are two main approaches to address the problem of combining static and dynamic language features. One can either start with a dynamic language and add static checking or start with a static language and make it more dynamic. The former is generally impossible due to code patterns such as duck typing and monkey patching which cannot be statically checked. The latter might be a better approach as one can reuse the existing static type checker while disregarding some errors and still compiling to byte code. The main difficulty in doing so is that later phases in the compiler rely on the type checked code being correct. Thus simply ignoring error is not enough to compile the program.
+There are two main approaches to address the problem of combining static and dynamic language features. One can either start with a dynamic language and add static checking or start with a static language and make it dynamic. The former is generally impossible due to code patterns such as duck typing and monkey patching which cannot be statically checked. The latter is almost always possible by interpreting the program. Yet, interpretation is slow and cannot accomodate certain features of Scala, such as implicits, which allow filling in the program AST by reasoning about types and scopes. Therefore simply interpreting Scala code is impossible.
 
-% Lucia's variant:  There are two main approaches to address the problem of combining static and dynamic language features. One can either start with a dynamic language and add static checking or start with a static language and make it dynamic. The former is generally impossible due to code patterns such as duck typing and monkey patching which cannot be statically checked. The latter is possible since a program can almost always be interpreted. Yet, interpretation is slow and is completely impossible for languages like Scala, where the program AST is influenced by types through implicits. Yet, there is a middle ground facing the main difficulty in the later phases of the compiler which rely on the type code being correctly checked. Thus simply ignoring errors is not enough to compile the program.
+Scaladyno takes a middle ground approach: it type-checks the program but ignores the parts that are erroneous. This relies on the insight that errors are localized and thus, in many cases, the program can still run correctly despite having erroneous parts. This makes it possible to replace erroneous code by the actual error messages, much like the execution in Python would proceed. The main difficulty here is that later phases of the compiler rely on the code having correctly been type-checked and verified, therefore simply ignoring errors is not enough to compile the program. Instead, ScalaDyno is capable of cleaning up the tree and the symbol table to the point that the rest of the compiler phases can safely proceed:
 
-  A typical bug-fix scenario includes adding an extra argument in several methods. Doing so manually by modifying the signature can lead to inconsistencies in the code since multiple call sites would need to be updated. In a statically typed language it would be impossible to prototype such a change since it would not pass the type checker. In this case it would be desirable to be able to execute only the path in the program relevant to the bug, while ignoring overall consistency until the fix is working correctly.
+\begin{lstlisting-nobreak}
+$ ../dy-scalac program.scala
+program.scala:13: warning: [scaladyno] value noSuchMethod is not a member of Foo
+     x.noSuchMethod()
+       ^
+program.scala:14: warning: [scaladyno] not found: value NoSuchClass
+     val y = NoSuchClass()
+             ^
+two warnings found
 
-  When refactoring part of the code which consists for example in changing the signature of a method or a constructor all the corresponding calls which use this changed construct also need to be filled in with default arguments. This however mostly need to be done by hand with require a big effort from the programmer mostly because the given described process might need to be done several time during design iterations. Of course the given problem could be solved by overloading the given function definition but again this creates some unnecessary overhead due to the reason described above.
+$ ../dy-scala Program
+Hello!
+\end{lstlisting-nobreak}
 
-  Secondly, during refactoring and release preparation, a more static approach is preferrable, to allow the developer to confidently make changes without the risk of breaking the code. For example when refacting part of the code which consists in changing the signature of a method or a constructor all the corresponding calls which use this changed construct also need to be filled in with default arguments. However this needs to be done mostly by hand, thus requiring a big effort from the programmer mostly because the described process might need to be done several times during design iterations. Of course the given problem could be solved by overloading the given function definition but again this creates some unnecessary overhead due to the reasons described above. Hence it would be very useful to be able to execute paths of the program which do not include any of those wrong signatures being called. %In the case where such branches would be traversed.
+The contributions of this paper are:
+\begin{packed_item}
+\item developing a method to allow fast prototyping in Scala;
+\item showing how the abstract syntax tree and symbol table consistency can be restored after encountering errors;
+\item implementing the theory in a compiler plugin of less than 200 lines of code.
+\end{packed_item}
 
+The paper will further explain the approach, the theory and the implementation. It will later present related work and conclude.
