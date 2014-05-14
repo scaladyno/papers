@@ -1,8 +1,14 @@
 \section{Abstract}
 
-In the academic and the professional community it is agreed on the fact that both statically and dynamically typed languages have both benefits and drawbacks. Statically typed languages will reject any code that they cannot prove to be correct. However this is very inflexible to the developer when they are prototyping incompatible changes to the code.
-Dynamically typed languages on the other hand give a lot more freedom to the developer by only performing the necessary checks at runtime.
+%In the academic and the professional community it is agreed on the fact that both statically and dynamically typed languages have both benefits and drawbacks. Statically typed languages reject any code that they cannot prove to be correct. However this inflexible, especially when developers are prototyping incompatible changes to the code.
+%On the other hand, dynamically typed languages give the developer more freedom by only performing the necessary checks at runtime, but give rise to code patterns that are impossible to check, such as monkey patching and using duck typing.
 
-It would be useful to have a programming language that combines the benefits of both static and dynamic typing. Such a language would allow agile development while also offering static guarantees for the final compilation.
+%It would be useful to have a programming language that combines the benefits of both static and dynamic typing. Such a language would allow agile development while also offering static guarantees for the final compilation.
 
-The ScalaDyno compiler plugin allows fast prototyping with the Scala programming language. This in done by deferring compilation errors to runtime and thus allowing byte code generation for partially incorrect programs.
+%The ScalaDyno compiler plugin allows fast prototyping with the Scala programming language. This in done by deferring compilation errors to runtime and thus allowing byte code generation for partially incorrect programs. This reaps the benefits of static checking with the real-world requirements of fast prototyping and quick debugging.
+
+%% TODO: Add Key insight + contribution
+\textbf{TODO: Add Key insight + contribution}
+
+The ScalaDyno compiler plugin allows fast prototyping with the Scala programming language, in a way that combines the benefits of both statically and dynamically typed languages. This reaps the benefits of static checking with the real-world requirements of fast prototyping and quick debugging. Agile development, characteristic to dynamically typed languages, is supported by deferring compilation errors to runtime and thus allowing byte code generation for partially correct programs. This is combined with offering static guarantees for the correct parts of the program. Overall it results in avoiding code patterns that are impossible to check, such as monkey patching and using duck typing. This provides flexibility when developers are prototyping incompatible changes to the code.
+
