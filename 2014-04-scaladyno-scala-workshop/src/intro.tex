@@ -26,7 +26,6 @@ A typical bug-fixing scenario includes adding an extra argument in several metho
    def never_called() = {
      val x = new Foo()
      x.noSuchMethod()
-     val y = NoSuchClass()
    }
  }
 \end{lstlisting-nobreak}
@@ -40,11 +39,7 @@ $ ../dy-scalac program.scala
 program.scala:13: warning: [scaladyno] value noSuchMethod is not a member of Foo
      x.noSuchMethod()
        ^
-program.scala:14: warning: [scaladyno] not found: value NoSuchClass
-     val y = NoSuchClass()
-             ^
-two warnings found
-
+one warning found
 $ ../dy-scala Program
 Hello!
 \end{lstlisting-nobreak}
