@@ -10,7 +10,7 @@ A dynamic language can be augmented it with type annotations which can then be u
 
 A second approach is completely switching to the use of reflection, practically turning a statically typed language such as Java or Scala into a dynamic language. This has been implemented in DuctileJ and DuctileScala \cite{ductilej,ductilescala}. Yet this approach makes heavy use of reflection and is unable to resolve implicits. This makes it unsuitable for our use case, as it introduces significant overheads for correct programs and it potentially prevents correct programs using implicits from running at all.
 
-To add dynamic behaviour to the Java programming language, DuctileJ \cite{ductilej} does a detyping transformation before the real typing phase. This detyping consists of converting the types of all the variables and fields, as well as all the method parameters, to |Object|, which is a the Java super class of any other type. In addition to those transformations, a runtime library |RT| is needed to support late binding:
+To add dynamic behavior to the Java programming language, DuctileJ \cite{ductilej} does a detyping transformation before the real typing phase. This detyping consists of converting the types of all the variables and fields, as well as all the method parameters, to |Object|, which is a the Java super class of any other type. In addition to those transformations, a runtime library |RT| is needed to support late binding:
 
 \begin{lstlisting-nobreak}
 RT.newInstance("ClassName")
@@ -26,7 +26,7 @@ Very similar to DuctileJ, DuctileScala \cite{ductilescala} also introduces a set
 
 \subsection{Proxies}
 
-A third approch is using an proxy technique, such as the |Dynamic| trait in Scala \cite{dynamic} which acts as a proxy that allows rewriting unresolved methods to more general proxies, which can later use reflection to call the correct methods. Such approaches have been used to allow interoperability between Scala and JavaScript \cite{scala-js}, but they are not able to handle all cases necessary for prototyping, notably they require correct name and type resolution to work properly. Unfortunately, in many practical scenarios, once an error has occured, type inference doesn't kick in anymore and is not able to infer the |Dynamic| marker in a value's type, such that methods may be called on it.
+A third approach is using an proxy technique, such as the |Dynamic| trait in Scala \cite{dynamic} which acts as a proxy that allows rewriting unresolved methods to more general proxies, which can later use reflection to call the correct methods. Such approaches have been used to allow interoperability between Scala and JavaScript \cite{scala-js}, but they are not able to handle all cases necessary for prototyping, notably they require correct name and type resolution to work properly. Unfortunately, in many practical scenarios, once an error has occurred, type inference doesn't kick in anymore and is not able to infer the |Dynamic| marker in a value's type, such that methods may be called on it.
 
 Instead of making the entire Scala language more dynamic, the scala-js approach \cite{scala-js} focusses on integrating combined development with Scala an Javascript. A specific set of Scala classes is created which are only facade types for a corresponding Javascript object, those constructs can then either be compiled to dynamic Javascript or to Scala code. Some complications encountered were due to implicit conversions and the connections with existing Javascript libraries.
 
