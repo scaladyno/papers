@@ -1,6 +1,6 @@
 \section{Related work}
 
-Several approaches to enabling faster prototyping are currently in use: (1) dynamic languages with checking, (2) reflection and (3) proxies.
+Several approaches to enabling faster prototyping are currently in use: (1) dynamic languages with checking, (2) reflection, (3) proxies and (4) moving type computations to runtime.
 
 \subsection{Dynamic Languages with Checking}
 
@@ -10,7 +10,7 @@ A dynamic language can be augmented it with type annotations which can then be u
 
 A second approach is completely switching to the use of reflection, practically turning a statically typed language such as Java or Scala into a dynamic language. This has been implemented in DuctileJ and DuctileScala \cite{ductilej,ductilescala}. Yet this approach makes heavy use of reflection and is unable to resolve implicits. This makes it unsuitable for our use case, as it introduces significant overheads for correct programs and it potentially prevents correct programs using implicits from running at all.
 
-To add dynamic behaviour to the Java programming language, DuctileJ \cite{ductilej} does a detyping transformation before the real typing phase. This detyping consists of converting the types of all the variables and fields, as well as all the method parameters, to |Object|, which is a the Java super class of any other type. In addition to those transformations, a runtime library |RT| is needed to support the following actions:
+To add dynamic behavior to the Java programming language, DuctileJ \cite{ductilej} does a detyping transformation before the real typing phase. This detyping consists of converting the types of all the variables and fields, as well as all the method parameters, to |Object|, which is a the Java super class of any other type. In addition to those transformations, a runtime library |RT| is needed to support late binding:
 
 \begin{lstlisting-nobreak}
 RT.newInstance("ClassName")
@@ -20,57 +20,55 @@ RT.assign(instance, "fieldName", value)
 RT.cast("ClassName", instance)
 \end{lstlisting-nobreak}
 
-\noindent which are needed for the late runtime binding.
-
 Such a transformation however requires the duplication of the typing phase in the compiler, the first to detype the code and collect possible error messages the second to do the standard typing on the modified tree. Also due to method overloading, method signatures needs to be mangled which means that each original parameter need to be duplicated, one is needed to carry the type, the other to carry the value. Of course this creates some additional problems when working with pre-compiled libraries. However this transformation allows duck-typing which is also considered an important feature of dynamically typed languages.
 
 Very similar to DuctileJ, DuctileScala \cite{ductilescala} also introduces a set of new compiler phases (|signature|, |earlynamer|, |earlypackageobjects|, |earlytyper|, |detyper|) which perform detyping as well as other necessary transformation (e.g. signature mangling). Some transformations however are even more complicated due to implicit conversions (views) as well as pattern-matching which are unique features of Scala compared to Java.
 
 \subsection{Proxies}
 
-A third approch is using an proxy technique, such as the |Dynamic| trait in Scala \cite{dynamic} which acts as a proxy that allows rewriting unresolved methods to more general proxies, which can later use reflection to call the correct methods. Such approaches have been used to allow interoperability between Scala and JavaScript \cite{scala-js, greg-js-dsl}, but they are not able to handle all cases necessary for prototyping, notably they require correct name and type resolution to work properly. Unfortunately, in many practical scenarios, once an error has occured, type inference doesn't kick in anymore and is not able to infer the |Dynamic| marker in a value's type, such that methods may be called on it.
-
+A third approach is using an proxy technique, such as the |Dynamic| trait in Scala \cite{dynamic} which acts as a proxy that allows rewriting unresolved methods to more general proxies, which can later use reflection to call the correct methods. Such approaches have been used to allow interoperability between Scala and JavaScript \cite{scala-js}, but they are not able to handle all cases necessary for prototyping, notably they require correct name and type resolution to work properly. Unfortunately, in many practical scenarios, once an error has occurred, type inference doesn't kick in anymore and is not able to infer the |Dynamic| marker in a value's type, such that methods may be called on it.
 
 Instead of making the entire Scala language more dynamic, the scala-js approach \cite{scala-js} focusses on integrating combined development with Scala an Javascript. A specific set of Scala classes is created which are only facade types for a corresponding Javascript object, those constructs can then either be compiled to dynamic Javascript or to Scala code. Some complications encountered were due to implicit conversions and the connections with existing Javascript libraries.
 
-In analogy to hardware virtualization for virtual machines, Scala-Virtualized allows the programmer to customize build-in language features using virtual methods such as:
+A somewhat similar approach is taken by scala-virtualized \cite{scala-virtualized}: using the analogy to hardware virtualization for program languages, one can customize the build-in language constructs by transforming them into method calls:
 
 \begin{lstlisting-nobreak}
 def __ifThenElse[T](cond: Rep[Boolean], thene: => Rep[T], elsee: => Rep[T])
 \end{lstlisting-nobreak}
 
-Similar to multi-stage programming Scala-Virtualized can be split in two parts, first the shallow embedding does type level computation using implicits followed by a deep embedding which enables to redefine build-in language constructs. "Lightweight Modular Staging (LMS) is a set of techniques and a core compiler frame-work for building embedded DSLs in Scala-Virtualized."
+Scala-Virtualized enables advanced multi-stage programming in Scala, using the Lightweight Modular Staging (LMS) framework. The LMS framework has been very successful at optimizing embedded domain-specific languages (DSLs). One such DSL is JavaScript, which can be embedded in Scala \cite{greg-js-dsl}. Gradual typing allows granularity such that external JavaScript libraries do not need to be typed as they are only needed in later phases. In addition the DSL code can either be compiled to JavaScript or be used as Scala which means  that computation can either be done on the server side or the client side.
 
-Using the Lightweight Modular Staging technique introduced above, Javascript can be embedded as a DSL in Scala. Gradual typing allows granularity such that external JavaScript libraries do not need to be typed as they are only needed in later phases. In addition the DSL code can either be compiled to JavaScript or be used as Scala which means  that computation can either be done on the server side or the client side.
-
-\subsection{Deferred type errors}
+\subsection{Deferred Type Errors}
 
 The GHC\cite{haskell-deferred-type-errors} compiler allows the addition of equality proofs to the system FC intermediate language. Very much like types, equality proofs can be completely erased so that they induce no runtime overhead. They are also first class citizens such that proof-as-values allow to defer type errors to runtime so partially type incorrect programs can compile and execute.
 
+
 \newcommand{\DS}{\begin{sideways}DuctileScala\end{sideways}}
 \newcommand{\hask}{\begin{sideways}Haskell\end{sideways}}
-\newcommand{\dyn}{\begin{sideways}Dynamic trait\end{sideways}}
+\newcommand{\dyn}{\begin{sideways}Dynamic / Scala-JS\;\end{sideways}}
 \newcommand{\SV}{\begin{sideways}Scala-Virtualized\end{sideways}}
 \newcommand{\dart}{\begin{sideways}Dart\end{sideways}}
 \newcommand{\DL}{\begin{sideways}dynamic languages\end{sideways}}
-\newcommand{\SJS}{\begin{sideways}Scala-JS interoperatability\end{sideways}}
 \newcommand{\JSLMS}{\begin{sideways}JS on LMS\end{sideways}}
 \newcommand{\SD}{\begin{sideways}ScalaDyno\end{sideways}}
 
-\begin{table*}[b]
+\begin{table}[t!]
+\vspace{0.5em}
 \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
-	\hline
-													& \DS    & \hask  & \dyn   & \SV    & \dart  & \DL    & \SJS   & \JSLMS & \SD \\
-	\hline
-    derferred class name resolution errors 			& \xmark & \xmark & \xmark & \xmark & \xmark & \cmark & \xmark & \xmark & \cmark \\
     \hline
-    deferred method and field resolution errors 	& \cmark & \xmark & \cmark & \xmark & \xmark & \cmark & \cmark & \cmark & \cmark \\
+                                                    & \DS    & \hask  & \dyn   & \SV    & \dart  & \DL    & \SD \\
     \hline
-    deferred type resolution errors 				& \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+    def. name res. errors                           & \xmark & \xmark & \xmark & \xmark & \xmark & \cmark & \cmark \\
+%     \hline
+%     def. method and field res. errors                 & \cmark & \xmark & \cmark & \xmark & \xmark & \cmark & \cmark \\
     \hline
-    fast runtime 									& \xmark & \xmark & \xmark & \cmark & \cmark & \cmark & \xmark & \xmark & \cmark \\
+    def. type errors                     & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
     \hline
-    work at compile time 							& \xmark & \cmark & \xmark & \cmark & \xmark & \xmark & \cmark & \cmark & \cmark \\
+    fast runtime                                    & \xmark & \xmark & \xmark & \cmark & \cmark & \cmark & \cmark \\
+    \hline
+    compile-time res.                         & \xmark & \cmark & \cmark & \cmark & \xmark & \xmark & \cmark \\
     \hline
 \end{tabular}
-\end{table*}
+\caption{Summary of different approaches to deferring type errors. Abbreviations: def. = deferred, res. = resolution}
+\vspace{-1em}
+\end{table}
