@@ -5,6 +5,7 @@ Several approaches to enabling faster prototyping are currently in use: (1) dyna
 \subsection{Dynamic Languages with Checking}
 
 A dynamic language can be augmented it with type annotations which can then be used to give static feedback at compile time. These annotations would be optional, and the checks would only trigger if both the actual and the expected type are annotated, as the Dart programming language does \cite{dart}. Yet, such approaches are still fundamentally dynamic, and thus allow patterns such as monkey patching and duck typing, which, once used, make the code base impossible to check completely.
+Typed Racket \cite{racket} as well as Strongtalk (a Smalltalk dialect with optional static typing support) \cite{strongtalk}, a , are other examples of brining static typing to a dynamic language.
 
 \subsection{Using Reflection}
 
@@ -20,7 +21,7 @@ RT.assign(instance, "fieldName", value)
 RT.cast("ClassName", instance)
 \end{lstlisting-nobreak}
 
-Such a transformation however requires the duplication of the typing phase in the compiler, the first to detype the code and collect possible error messages the second to do the standard typing on the modified tree. Also due to method overloading, method signatures needs to be mangled which means that each original parameter need to be duplicated, one is needed to carry the type, the other to carry the value. Of course this creates some additional problems when working with pre-compiled libraries. However this transformation allows duck-typing which is also considered an important feature of dynamically typed languages.
+Such a transformation however requires the duplication of the typing phase in the compiler, the first to detype the code and collect possible error messages the second to do the standard typing on the modified tree. Also due to method overloading, method signatures needs to be mangled which means that each original parameter needs to be duplicated, one is needed to carry the type, the other to carry the value. Of course this creates some additional problems when working with pre-compiled libraries. However this transformation allows duck-typing which is also considered an important feature of dynamically typed languages.
 
 Very similar to DuctileJ, DuctileScala \cite{ductilescala} also introduces a set of new compiler phases (|signature|, |earlynamer|, |earlypackageobjects|, |earlytyper|, |detyper|) which perform detyping as well as other necessary transformation (e.g. signature mangling). Some transformations however are even more complicated due to implicit conversions (views) as well as pattern-matching which are unique features of Scala compared to Java.
 
@@ -28,7 +29,7 @@ Very similar to DuctileJ, DuctileScala \cite{ductilescala} also introduces a set
 
 A third approach is using an proxy technique, such as the |Dynamic| trait in Scala \cite{dynamic} which acts as a proxy that allows rewriting unresolved methods to more general proxies, which can later use reflection to call the correct methods. Such approaches have been used to allow interoperability between Scala and JavaScript \cite{scala-js}, but they are not able to handle all cases necessary for prototyping, notably they require correct name and type resolution to work properly. Unfortunately, in many practical scenarios, once an error has occurred, type inference doesn't kick in anymore and is not able to infer the |Dynamic| marker in a value's type, such that methods may be called on it.
 
-Instead of making the entire Scala language more dynamic, the scala-js approach \cite{scala-js} focusses on integrating combined development with Scala an Javascript. A specific set of Scala classes is created which are only facade types for a corresponding Javascript object, those constructs can then either be compiled to dynamic Javascript or to Scala code. Some complications encountered were due to implicit conversions and the connections with existing Javascript libraries.
+Instead of making the entire Scala language more dynamic, the scala-js approach \cite{scala-js} focuses on integrating combined development with Scala an Javascript. A specific set of Scala classes is created which are only facade types for a corresponding Javascript object, those constructs can then either be compiled to dynamic Javascript or to Scala code. Some complications encountered were due to implicit conversions and the connections with existing Javascript libraries.
 
 A somewhat similar approach is taken by scala-virtualized \cite{scala-virtualized}: using the analogy to hardware virtualization for program languages, one can customize the build-in language constructs by transforming them into method calls:
 
@@ -56,17 +57,17 @@ The GHC\cite{haskell-deferred-type-errors} compiler allows the addition of equal
 \vspace{0.5em}
 \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
     \hline
-                                                    & \DS    & \hask  & \dyn   & \SV    & \dart  & \DL    & \SD \\
+                                         & \DS    & \hask  & \dyn   & \SV    & \dart  & \DL    & \SD \\
     \hline
-    def. name res. errors                           & \xmark & \xmark & \xmark & \xmark & \xmark & \cmark & \cmark \\
+    def. name res. errors                & \xmark & \xmark & \xmark & \xmark & \xmark & \cmark & \cmark \\
 %     \hline
 %     def. method and field res. errors                 & \cmark & \xmark & \cmark & \xmark & \xmark & \cmark & \cmark \\
     \hline
     def. type errors                     & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
     \hline
-    fast runtime                                    & \xmark & \xmark & \xmark & \cmark & \cmark & \cmark & \cmark \\
+    fast runtime                         & \xmark & \cmark & \xmark & \cmark & \cmark & \cmark & \cmark \\
     \hline
-    compile-time res.                         & \xmark & \cmark & \cmark & \cmark & \xmark & \xmark & \cmark \\
+    compile-time res.                    & \xmark & \cmark & \cmark & \cmark & \xmark & \xmark & \cmark \\
     \hline
 \end{tabular}
 \caption{Summary of different approaches to deferring type errors. Abbreviations: def. = deferred, res. = resolution}

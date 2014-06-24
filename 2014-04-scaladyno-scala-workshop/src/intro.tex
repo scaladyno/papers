@@ -12,6 +12,7 @@ In an ideal programming language, static feedback should be optional, such that 
 
 A typical bug-fixing scenario includes adding an extra argument in several methods. Doing so manually by modifying the signature can lead to an inconsistent code base until all call sites have been manually updated. In this case it would be desirable to be able to execute only the path in the program relevant to the bug, while ignoring overall consistency until the fix is working correctly:
 
+\begin{figure}[t]
 \begin{lstlisting-nobreak}
  object Program {
    // result of running the program: "Hello!"
@@ -29,6 +30,8 @@ A typical bug-fixing scenario includes adding an extra argument in several metho
    }
  }
 \end{lstlisting-nobreak}
+\vspace{-8mm}
+\end{figure}
 
 There are two main approaches to address the problem of combining static and dynamic language features. One can either start with a dynamic language and add static checking or start with a static language and make it dynamic. The former is generally impossible due to code patterns such as duck typing and monkey patching which cannot be statically checked. The latter is almost always possible by interpreting the program. Yet, interpretation is slow and cannot accommodate certain features of Scala, such as implicits, which allow filling in the program AST (abstract syntax tree) by reasoning about types and scopes. Therefore simply interpreting Scala code is impossible.
 
@@ -43,6 +46,8 @@ one warning found
 $ ../dy-scala Program
 Hello!
 \end{lstlisting-nobreak}
+
+For type correct programs, the use of the plugin will result in the exact same set of instructions as if compiled without the plugin. Furthermore executing an incorrect program for a type correct path will yield the same trace as if compiled without the plugin and with all errors fixed.
 
 The contributions of this paper are:
 \begin{packed_item}

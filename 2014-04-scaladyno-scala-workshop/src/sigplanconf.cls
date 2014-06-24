@@ -832,6 +832,9 @@
 %                       --------------
 
 
+%\def \@conferenceinfo{Scala}{'14, Uppsala, Sweden}
+%\def \@CopyrightYear{2014}
+%\def \@crdata{978-1-4503-2868-5}
 \def \@conferencename {}
 \def \@conferenceinfo {}
 \def \@copyrightyear {}
