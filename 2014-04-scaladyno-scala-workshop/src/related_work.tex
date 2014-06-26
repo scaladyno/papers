@@ -5,7 +5,7 @@ Several approaches to enabling faster prototyping are currently in use: (1) dyna
 \subsection{Dynamic Languages with Checking}
 
 A dynamic language can be augmented it with type annotations which can then be used to give static feedback at compile time. These annotations would be optional, and the checks would only trigger if both the actual and the expected type are annotated, as the Dart programming language does \cite{dart}. Yet, such approaches are still fundamentally dynamic, and thus allow patterns such as monkey patching and duck typing, which, once used, make the code base impossible to check completely.
-Typed Racket \cite{racket} as well as Strongtalk (a Smalltalk dialect with optional static typing support) \cite{strongtalk}, a , are other examples of brining static typing to a dynamic language.
+Typed Racket \cite{racket} as well as Strongtalk (a Smalltalk dialect with optional static typing support) \cite{strongtalk}, are other examples of brining static typing to a dynamic language.
 
 \subsection{Using Reflection}
 
@@ -53,7 +53,7 @@ The GHC\cite{haskell-deferred-type-errors} compiler allows the addition of equal
 \newcommand{\JSLMS}{\begin{sideways}JS on LMS\end{sideways}}
 \newcommand{\SD}{\begin{sideways}ScalaDyno\end{sideways}}
 
-\begin{table}[t!]
+\begin{table}[h]
 \vspace{0.5em}
 \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|}
     \hline

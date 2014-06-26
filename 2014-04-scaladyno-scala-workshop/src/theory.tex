@@ -8,7 +8,7 @@ In order to remove erroneous parts of the AST we have to make some critical assu
 
 Yet, in modern compilers, this is not the case: only single, relevant errors are reported to programmers, but the avalanches resulting from these errors are not shown. This has been studied in \cite{spurious} and is currently being applied in most compilers. In Scala, this is done using the |ErrorType|, an alternative bottom type which records the fact that it was produced by an error. Using this marker type combined with specialized typing rules allows the scala compiler to avoid avalanche errors, thus only reporting the relevant error messages.
 
-In the current compiler however a single compile-time error still halts the entire compilation process. This is because the later phases in the compiler rely on the assumption that the tree is correct. Our approach eliminates the erroneous nodes in the tree and the erroneous symbols created while type-checking the program. This allows later phases to compile the program to bytecode which can be correctly executed.
+In the current compiler however, a single compile-time error still halts the entire compilation process. This is because the later phases in the compiler rely on the assumption that the tree is correct before proceeding. Our approach eliminates the erroneous nodes in the tree and the erroneous symbols created while type-checking the program. This allows later phases to compile the program to bytecode which can be executed.
 
 Yet, the cleaned up code may be missing core parts of its functionality, and thus may produce undesired side effects:
 
