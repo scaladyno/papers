@@ -4,14 +4,15 @@ Several approaches to enabling faster prototyping are currently in use: (1) dyna
 
 \subsection{Dynamic Languages with Checking}
 
-A dynamic language can be augmented it with type annotations which can then be used to give static feedback at compile time. These annotations would be optional, and the checks would only trigger if both the actual and the expected type are annotated, as the Dart programming language does \cite{dart}. Yet, such approaches are still fundamentally dynamic, and thus allow patterns such as monkey patching and duck typing, which, once used, make the code base impossible to check completely.
-Typed Racket \cite{racket} as well as Strongtalk (a Smalltalk dialect with optional static typing support) \cite{strongtalk}, are other examples of brining static typing to a dynamic language.
+A dynamic language can be augmented it with type annotations which can then be used to give static feedback at compile time. These annotations would be optional, and the checks would only trigger if both the actual and the expected type are annotated, as the Dart programming language does \cite{dart}. Yet, such approaches are still fundamentally dynamic, as checking all the code would require adding annotations everywhere. Typed Racket \cite{racket} as well as Strongtalk (a Smalltalk dialect with optional static typing support) \cite{strongtalk}, are other examples of brining static typing to a dynamic language.
+
+A pitfall in dynamic languages is allowing patterns such as monkey patching and duck typing, such as, for example, in JavaScript. These patterns, once used, make the code base impossible to typecheck, since proving their correctness can, in adversarial cases, require solving the termination problem, which is undecidable.
 
 \subsection{Using Reflection}
 
-A second approach is completely switching to the use of reflection, practically turning a statically typed language such as Java or Scala into a dynamic language. This has been implemented in DuctileJ and DuctileScala \cite{ductilej,ductilescala}. Yet this approach makes heavy use of reflection and is unable to resolve implicits. This makes it unsuitable for our use case, as it introduces significant overheads for correct programs and it potentially prevents correct programs using implicits from running at all.
+A second approach is completely switching to the use of reflection, practically turning a statically typed language such as Java or Scala into a dynamic language. This has been implemented in DuctileJ and DuctileScala \cite{ductilej,ductilescala}. Yet this approach makes heavy use of reflection and is unable to resolve implicits. This makes it unsuitable for our use case, as it introduces significant overheads for correct programs and it potentially prevents correct programs that use implicit arguments from running at all.
 
-To add dynamic behavior to the Java programming language, DuctileJ \cite{ductilej} does a detyping transformation before the real typing phase. This detyping consists of converting the types of all the variables and fields, as well as all the method parameters, to |Object|, which is a the Java super class of any other type. In addition to those transformations, a runtime library |RT| is needed to support late binding:
+To add dynamic behavior to the Java programming language, DuctileJ \cite{ductilej} does a detyping transformation before the real typing phase. This detyping consists of converting the types of all the variables and fields, as well as all the method parameters, to |Object|, which is a the Java super class of any other types (the top type). In addition to these transformations, a runtime library |RT| is needed to support late binding:
 
 \begin{lstlisting-nobreak}
 RT.newInstance("ClassName")
@@ -27,11 +28,11 @@ Very similar to DuctileJ, DuctileScala \cite{ductilescala} also introduces a set
 
 \subsection{Proxies}
 
-A third approach is using an proxy technique, such as the |Dynamic| trait in Scala \cite{dynamic} which acts as a proxy that allows rewriting unresolved methods to more general proxies, which can later use reflection to call the correct methods. Such approaches have been used to allow interoperability between Scala and JavaScript \cite{scala-js}, but they are not able to handle all cases necessary for prototyping, notably they require correct name and type resolution to work properly. Unfortunately, in many practical scenarios, once an error has occurred, type inference doesn't kick in anymore and is not able to infer the |Dynamic| marker in a value's type, such that methods may be called on it.
+A third approach is using an proxy technique, such as the |Dynamic| trait in Scala \cite{dynamic} which acts as a proxy that allows rewriting unresolved methods to more general proxies that can later use reflection to call the correct methods. Such approaches have been used to allow interoperability between Scala and JavaScript \cite{scala-js}, but they are not able to handle all cases necessary for prototyping, notably they require correct name and type resolution to work properly. Unfortunately, in many practical scenarios, once an error has occurred, type inference doesn't kick in anymore and is not able to infer the |Dynamic| marker in a value's type, such that methods may be called on it.
 
 Instead of making the entire Scala language more dynamic, the scala-js approach \cite{scala-js} focuses on integrating combined development with Scala an Javascript. A specific set of Scala classes is created which are only facade types for a corresponding Javascript object, those constructs can then either be compiled to dynamic Javascript or to Scala code. Some complications encountered were due to implicit conversions and the connections with existing Javascript libraries.
 
-A somewhat similar approach is taken by scala-virtualized \cite{scala-virtualized}: using the analogy to hardware virtualization for program languages, one can customize the build-in language constructs by transforming them into method calls:
+A somewhat similar approach is taken by scala-virtualized \cite{scala-virtualized}: using the analogy to hardware virtualization for programming languages, one can customize the build-in language constructs by transforming them into method calls:
 
 \begin{lstlisting-nobreak}
 def __ifThenElse[T](cond: Rep[Boolean], thene: => Rep[T], elsee: => Rep[T])
@@ -41,8 +42,9 @@ Scala-Virtualized enables advanced multi-stage programming in Scala, using the L
 
 \subsection{Deferred Type Errors}
 
-The GHC\cite{haskell-deferred-type-errors} compiler allows the addition of equality proofs to the system FC intermediate language. Equality proofs can be completely erased so that they induce no runtime overhead. They are also first class citizens such that proof-as-values allow to defer type errors to runtime so partially type incorrect programs can compile and execute.
+The GHC \cite{haskell-deferred-type-errors} compiler allows the addition of equality proofs to the system FC intermediate language. Equality proofs can be completely erased so that they induce no runtime overhead. They are also first class citizens such that proof-as-values allow to defer type errors to runtime so partially type incorrect programs can compile and execute.
 
+The techniques presented are summarized in Table \ref{table-eval}.
 
 \newcommand{\DS}{\begin{sideways}DuctileScala\end{sideways}}
 \newcommand{\hask}{\begin{sideways}Haskell\end{sideways}}
@@ -71,5 +73,5 @@ The GHC\cite{haskell-deferred-type-errors} compiler allows the addition of equal
     \hline
 \end{tabular}
 \caption{Summary of different approaches to deferring type errors. Abbreviations: def. = deferred, res. = resolution}
-\vspace{-1em}
+\label{table-eval}
 \end{table}

@@ -23,7 +23,7 @@ In an ideal programming language, static feedback should be optional, such that 
    // should this method prevent compilation
    // and execution of the entire program?!?
    def never_called() = {
-     val x = new Foo()
+     val x = "Goodbye!"
      x.noSuchMethod()
    }
  }
@@ -31,34 +31,31 @@ In an ideal programming language, static feedback should be optional, such that 
 \vspace{-8mm}
 \end{figure}
 
-A typical bug-fixing scenario includes adding an extra argument in several methods. Doing so manually by modifying the signature can lead to an inconsistent code base until all call sites have been manually updated. In this case it would be desirable to be able to execute only the path in the program relevant to the bug, while ignoring overall consistency until the fix is working correctly.
+A typical bug-fixing scenario includes adding an extra argument in several methods. Doing so manually by modifying the signature can lead to an inconsistent code base until all call sites have been manually updated. In this case it would be desirable to be able to execute only the path in the program relevant to the bug, while ignoring overall consistency until the fix is working correctly. In the following example, where the |title| field was added, setting default arguments is not an option, so the programmer needs to proceed with refactoring all method calls:
 
-\begin{figure}[h]
 \begin{lstlisting-nobreak}
-def main(args: Array[String]) {
-	val country = "USA"
-	if (country == "Germany") {
-		greet("Merkel")
-	} else {
-		greet("Mr.", "Obama")
-	}
-}
+ def main(args: Array[String]) {
+   val country = "USA"
+   if (country == "Germany") {
+     greet("Merkel")
+     //    ^ expected 2 arguments, received 1
+   } else {
+     greet("Mr.", "Obama")
+   }
+ }
 
-def greet(title: String, newArg: String) {
-	println("Dear "+title+" "+newArg)
-}
+ def greet(title: String, name: String) {
+   println(s"Dear $title  $name")
+ }
 \end{lstlisting-nobreak}
-\caption[default args]
-   {Overloading or setting default arguments is not always an option to avoid refactoring all method calls.}
-\end{figure}
 
-There are two main approaches to address the problem of combining static and dynamic language features. One can either start with a dynamic language and add static checking or start with a static language and make it dynamic. The former is generally impossible due to code patterns such as duck typing and monkey patching which cannot be statically checked. The latter is almost always possible by interpreting the program. Yet, interpretation is slow and cannot accommodate certain features of Scala, such as implicits, which allow filling in the program AST (abstract syntax tree) by reasoning about types and scopes. Therefore simply interpreting Scala code is impossible.
+There are two fundamental approaches to address the problem of combining static and dynamic language features. One can either start with a dynamic language and add static checking or start with a static language and make it dynamic. The former is generally impossible due to code patterns such as duck typing and monkey patching which cannot be statically checked. The latter is almost always possible by interpreting the program. Yet, interpretation is slow and cannot accommodate certain features of Scala, such as implicit arguments, which allow filling in the program AST (abstract syntax tree) by reasoning about types and scopes. Therefore simply interpreting Scala code is impossible.
 
-ScalaDyno takes a middle ground approach: it type-checks the program but ignores the parts that are erroneous. This relies on the insight that errors are localized and thus, in many cases, the program can still run correctly despite having erroneous parts. This makes it possible to replace erroneous code by the actual error messages, much like the execution in Python would proceed. The main difficulty here is that later phases of the compiler rely on the code having correctly been type-checked and verified, therefore simply ignoring errors is not enough to compile the program. Instead, ScalaDyno is capable of cleaning up the tree and the symbol table to the point that the rest of the compiler phases can safely proceed:
+ScalaDyno takes a middle ground approach: it type-checks the program but ignores the parts that are erroneous. This relies on the insight that errors are localized and thus, in many cases, the program can still run correctly despite having erroneous parts. This makes it possible to replace erroneous code by the actual error messages, much like the execution in Python would proceed. The main difficulty here is that later phases of the compiler rely on the code having correctly been type-checked and verified, therefore simply ignoring errors is not enough to compile the program. Instead, ScalaDyno is capable of cleaning up the tree and the symbol table, thus allowing the rest of the compiler phases to proceed:
 
 \begin{lstlisting-nobreak}
 $ ../dy-scalac program.scala
-program.scala:13: warning: [scaladyno] value noSuchMethod is not a member of Foo
+program.scala:13: warning: [scaladyno] value noSuchMethod is not a member of String
      x.noSuchMethod()
        ^
 one warning found
@@ -66,7 +63,7 @@ $ ../dy-scala Program
 Hello!
 \end{lstlisting-nobreak}
 
-However, for type correct programs, the compilation with the use of the plugin will result in the exact same set of instructions as if compiled without. Furthermore executing an incorrect program for a type correct path will yield the same trace as if compiled without the plugin and with all errors fixed.\linebreak
+However, compiling type correct programs with the Scala\-Dyno plugin produces the exact same set of instructions as if compiled without. Furthermore executing an incorrect program for a type correct path will yield the same trace as if compiled without the plugin and with all errors fixed.\linebreak
 
 The contributions of this paper are:
 \begin{packed_item}
